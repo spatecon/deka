@@ -1,0 +1,38 @@
+/* Lexical part */
+
+_digit : '0'-'9' ;
+_letter : 'a'-'z' | 'A'-'Z' ;
+_word : _letter | _digit | '_' | '.' ;
+
+int : '1'-'9' {_digit} ;
+id : _letter {_word} ;
+
+
+!whitespace : ' ' | '\t' | '\n' | '\r' ;
+
+/* Syntax part */
+
+<<
+import (
+	"github.com/spatecon/deka/token"
+	"github.com/spatecon/deka/ast"
+)
+>>
+
+Calc : Expr;
+
+Expr :
+		Expr "+" Term	<< ast.NewExpr($0.(ast.IExpr), $2.(ast.IExpr)), nil >>
+	|	Term
+;
+
+Term :
+		Term "*" Factor	<< ast.NewTerm($0.(ast.IExpr), $2.(ast.IExpr)), nil >>
+	|	Factor
+;
+
+Factor :
+		"(" Expr ")"	<< $1, nil >>
+	|	int			<< ast.NewLiteralInt($0.(*token.Token).Lit) >>
+	|   id			<< ast.NewID($0.(*token.Token).Lit) >>
+;

@@ -34,7 +34,7 @@ func (vm *VM) readByte() byte {
 func (vm *VM) eval() {
 	for {
 		switch vm.readByte() {
-		case 0x00:
+		case OP_HALT:
 			return
 		}
 	}
